@@ -71,7 +71,6 @@ contract CoffeeToken is StandardToken {
     uint256 supply;
 
     function CoffeeToken() {
-        lastPayout = block.timestamp;
         balances[msg.sender] = 10000;
         totalSupply = 100000;
         name = "CoffeeToken";
@@ -82,16 +81,17 @@ contract CoffeeToken is StandardToken {
         supply = totalSupply - 10000;
     }
 
-    function getTokens(){
-        if(timeSinceLastPayout[msg.sender] = 0){
+    function getTokens() public returns(uint256 timeToPayout){
+        if(timeSinceLastPayout[msg.sender] == 0){
             timeSinceLastPayout[msg.sender] = now;
         }
         if(now - timeSinceLastPayout[msg.sender] >= timeBetweenPayouts){
             if(supply >= 0 && supply - maxFaucetPayoutPerRound >= 0){
                 supply -= maxFaucetPayoutPerRound;
-                msg.sender.transfer(maxFaucetPayoutPerRound);
+                balances[msg.sender] += maxFaucetPayoutPerRound;
             }
         }
+        return timeBetweenPayouts - (now-timeSinceLastPayout[msg.sender]);
     }
 
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
